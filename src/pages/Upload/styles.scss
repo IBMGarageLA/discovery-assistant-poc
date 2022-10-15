@@ -1,0 +1,17 @@
+.toast-container {
+  position: absolute;
+  right: 0;
+  top: 3rem;
+  width: 30rem;
+  margin-right: 0;
+  animation: slideIn 2s;
+}
+
+@keyframes slideIn {
+  from {
+    margin-right: -30rem;
+  }
+  to {
+    margin-right: 0px;
+  }
+}

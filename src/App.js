@@ -1,24 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.scss";
+import React from "react";
+import { Theme } from "@carbon/react";
+import Routes from "./router";
+import DefaultHeader from "./components/DefaultHeader";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Theme theme={"g100"}>
+        <DefaultHeader />
+      </Theme>
+      <Routes />
+    </>
   );
 }
 
