@@ -7,8 +7,8 @@ import {
   SelectItem,
   Button,
 } from "@carbon/react";
-import React, { useEffect, useState } from "react";
-import uploadFile from "../../services/uploadFile";
+import React, { useState } from "react";
+import { uploadFile } from "../../services/uploadFile";
 
 const availableCompanies = [
   {
@@ -48,6 +48,8 @@ function UploadZone(props) {
 
   function handleUpload(e) {
     e.preventDefault();
+
+    setFileStatus("edit");
 
     const newFile = Object.values(e.target?.files)[0] || {};
 

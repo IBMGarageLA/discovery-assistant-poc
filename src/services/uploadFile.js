@@ -24,4 +24,19 @@ async function uploadFile(file, metadata = {}) {
   }
 }
 
-export default uploadFile;
+async function searchText(company, text) {
+  try {
+    const result = await apiInstance.get("/search", {
+      params: { company, text },
+    });
+
+    return result?.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = {
+  uploadFile,
+  searchText,
+};

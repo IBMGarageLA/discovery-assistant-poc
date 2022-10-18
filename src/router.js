@@ -7,12 +7,15 @@ import {
 
 // Pages import
 import Upload from "./pages/Upload";
+import TestDiscovery from "./pages/TestDiscovery";
 
-function Routes() {
+function Routes({ children }) {
   return (
     <Router>
+      {children}
       <Switch>
         <Route path="/" element={<Upload />} />
+        <Route path="/test-discovery" element={<TestDiscovery />} />
       </Switch>
     </Router>
   );

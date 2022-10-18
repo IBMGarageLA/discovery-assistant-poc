@@ -1,17 +1,19 @@
 import "./App.scss";
 import React from "react";
-import { Theme } from "@carbon/react";
+import { Theme, Loading } from "@carbon/react";
 import Routes from "./router";
 import DefaultHeader from "./components/DefaultHeader";
+import GlobalStateProvider from "./hooks/globalState";
 
 function App() {
   return (
-    <>
-      <Theme theme={"g100"}>
-        <DefaultHeader />
-      </Theme>
-      <Routes />
-    </>
+    <GlobalStateProvider>
+      <Routes>
+        <Theme theme={"g100"}>
+          <DefaultHeader />
+        </Theme>
+      </Routes>
+    </GlobalStateProvider>
   );
 }
 
