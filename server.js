@@ -19,6 +19,7 @@ const {
   APPID_TENANT_ID,
   APPID_SECRET,
   APPID_OAUTH_URL,
+  APP_DOMAIN,
 } = process.env;
 
 server.use(
@@ -38,7 +39,7 @@ passport.use(
     clientId: APPID_CLIENT_ID,
     secret: APPID_SECRET,
     oauthServerUrl: APPID_OAUTH_URL,
-    redirectUri: "http://localhost:3000/appid/callback",
+    redirectUri: `${APP_DOMAIN}/appid/callback`,
   })
 );
 
