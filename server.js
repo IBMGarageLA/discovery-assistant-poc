@@ -1,10 +1,47 @@
 require("dotenv").config();
+
 const express = require("express");
 const server = express();
+const session = require("express-session");
+const passport = require("passport");
+const WebAppStrategy = require("ibmcloud-appid").WebAppStrategy;
+const cors = require("cors");
 
 const fs = require("fs");
 
-const cors = require("cors");
+const {
+  WD_API_KEY,
+  WD_API_VERSION,
+  WD_SERVICE_URL,
+  WD_PROJECT_ID,
+  WD_COLLECTION_ID,
+  APPID_CLIENT_ID,
+  APPID_TENANT_ID,
+  APPID_SECRET,
+  APPID_OAUTH_URL,
+} = process.env;
+
+server.use(
+  session({
+    secret: "123456",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+server.use(passport.initialize());
+server.use(passport.session());
+passport.serializeUser((user, cb) => cb(null, user));
+passport.deserializeUser((user, cb) => cb(null, user));
+passport.use(
+  new WebAppStrategy({
+    tenantId: APPID_TENANT_ID,
+    clientId: APPID_CLIENT_ID,
+    secret: APPID_SECRET,
+    oauthServerUrl: APPID_OAUTH_URL,
+    redirectUri: "http://localhost:3000/appid/callback",
+  })
+);
+
 server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
@@ -14,14 +51,7 @@ const uploadHandler = multer({ dest: "/tmp/file" });
 
 const DiscoveryV2 = require("ibm-watson/discovery/v2");
 const { IamAuthenticator } = require("ibm-watson/auth");
-
-const {
-  WD_API_KEY,
-  WD_API_VERSION,
-  WD_SERVICE_URL,
-  WD_PROJECT_ID,
-  WD_COLLECTION_ID,
-} = process.env;
+const path = require("path");
 
 const discoveryClient = new DiscoveryV2({
   authenticator: new IamAuthenticator({ apikey: WD_API_KEY }),
@@ -30,6 +60,17 @@ const discoveryClient = new DiscoveryV2({
 });
 
 const PORT = process.env.PORT || 3001;
+
+server.get(
+  "/appid/callback",
+  passport.authenticate(WebAppStrategy.STRATEGY_NAME)
+);
+
+if (process.env.NODE_ENV === "production") {
+  server.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+}
+
+server.use(express.static(path.join(__dirname, "build")));
 
 server.post("/file/upload", uploadHandler.single("file"), (req, res) => {
   const { file, body } = req;
@@ -76,6 +117,10 @@ server.get("/search", (req, res) => {
     .then(({ result }) => {
       res.send(result);
     });
+});
+
+server.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 server.listen(PORT, () => {

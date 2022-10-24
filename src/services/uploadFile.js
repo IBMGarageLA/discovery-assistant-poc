@@ -5,7 +5,7 @@ const baseUrl =
 console.log(process.env.NODE_ENV);
 const apiInstance = axios.create({ baseURL: baseUrl });
 
-async function uploadFile(file, metadata = {}) {
+export async function uploadFile(file, metadata = {}) {
   try {
     const form = new FormData();
 
@@ -24,7 +24,7 @@ async function uploadFile(file, metadata = {}) {
   }
 }
 
-async function searchText(company, text) {
+export async function searchText(company, text) {
   try {
     const result = await apiInstance.get("/search", {
       params: { company, text },
@@ -35,8 +35,3 @@ async function searchText(company, text) {
     throw error;
   }
 }
-
-module.exports = {
-  uploadFile,
-  searchText,
-};
