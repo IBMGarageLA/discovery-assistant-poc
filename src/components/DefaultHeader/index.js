@@ -38,6 +38,9 @@ function DefaultHeader() {
         <HighlightableHeaderMenuItem to="/test-discovery">
           Test Discovery
         </HighlightableHeaderMenuItem>
+        <HighlightableHeaderMenuItem to="/chat">
+          Chat
+        </HighlightableHeaderMenuItem>
       </HeaderNavigation>
     </Header>
   );

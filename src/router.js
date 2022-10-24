@@ -8,14 +8,16 @@ import {
 // Pages import
 import Upload from "./pages/Upload";
 import TestDiscovery from "./pages/TestDiscovery";
+import Chat from "./pages/Chat";
 
 function Routes({ children }) {
   return (
     <Router>
       {children}
       <Switch>
-        <Route path="/" element={<Upload />} />
-        <Route path="/test-discovery" element={<TestDiscovery />} />
+        <Route path="" element={<Upload />} />
+        <Route path="test-discovery" element={<TestDiscovery />} />
+        <Route path="chat" element={<Chat />} />
       </Switch>
     </Router>
   );
