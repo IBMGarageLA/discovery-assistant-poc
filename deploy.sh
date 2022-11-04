@@ -13,6 +13,7 @@ echo "Building process started"
 # Log in IBM Cloud
 ibmcloud login --apikey ${APIKEY}
 
+ibmcloud target -r ${CLOUD_REGION}
 # Log in IBM private container registry
 ibmcloud cr login
 
