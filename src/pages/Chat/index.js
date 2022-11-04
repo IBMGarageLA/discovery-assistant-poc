@@ -17,8 +17,8 @@ const availableCompanies = [
     text: "ADP",
   },
   {
-    value: "client-eng",
-    text: "Client Engineering",
+    value: "company-x",
+    text: "Company X",
   },
   {
     value: "ibm",
