@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes as Switch,
@@ -9,8 +9,25 @@ import {
 import Upload from "./pages/Upload";
 import TestDiscovery from "./pages/TestDiscovery";
 import Chat from "./pages/Chat";
+import { useGlobalState } from "./hooks/globalState";
+import { getUser } from "./services/uploadFile";
 
 function Routes({ children }) {
+  const { setLoggedUser } = useGlobalState();
+
+  const getLoggedUser = async () => {
+    try {
+      const user = await getUser();
+      setLoggedUser(user);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getLoggedUser();
+  }, []);
+
   return (
     <Router>
       {children}

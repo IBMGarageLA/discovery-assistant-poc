@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@carbon/icons-react": "^11.11.0",
     "@carbon/react": "^1.15.0",
+    "@ibm-cloud/cloudant": "^0.3.0",
     "@ibm-watson/assistant-web-chat-react": "^1.0.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

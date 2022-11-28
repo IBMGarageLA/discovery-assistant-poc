@@ -35,3 +35,33 @@ export async function searchText(company, text) {
     throw error;
   }
 }
+
+export async function getUser() {
+  try {
+    const result = await apiInstance.get("/user");
+
+    return result?.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function postFeedback(feedback) {
+  try {
+    const result = await apiInstance.post("/feedback", feedback);
+
+    return result?.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function updateFeedback(docId, feedback) {
+  try {
+    const result = await apiInstance.put(`/feedback/${docId}`, feedback);
+
+    return result?.data;
+  } catch (error) {
+    throw error;
+  }
+}

@@ -72,9 +72,14 @@ function SelectInput(props) {
 
 function TestZone(props) {
   const prefix = usePrefix();
-  const [searchText, setSearchText] = useState(null);
-  const [company, setCompany] = useState(null);
-  const { setSearchResults, setLoading } = useGlobalState();
+  const {
+    setSearchResults,
+    setLoading,
+    searchText,
+    setSearchText,
+    company,
+    setCompany,
+  } = useGlobalState();
 
   function handleCompanySelection(e) {
     e.preventDefault();

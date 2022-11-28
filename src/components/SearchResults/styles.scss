@@ -8,11 +8,14 @@
 .document-passage .filename {
   font-size: inherit;
   font-family: inherit;
-  margin-bottom: 1rem;
 }
 
 .document-passage .filename span {
   font-weight: bold;
+}
+
+.highlight-passage {
+  margin-bottom: 1rem;
 }
 
 .highlight-passage em {
@@ -21,4 +24,32 @@
 
 .highlight-passage em:hover {
   background-color: #a6c5ff;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: #00000049;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.user-feedback {
+  display: flex;
+  justify-content: right;
+}
+
+.user-feedback svg {
+  cursor: pointer;
+}
+
+.user-feedback svg:hover {
+  filter: drop-shadow(1px 1px 1px #000000);
+}
+
+.user-feedback :last-child {
+  margin-left: 1rem;
 }

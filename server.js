@@ -20,6 +20,8 @@ const {
   APPID_SECRET,
   APPID_OAUTH_URL,
   APP_DOMAIN,
+  CLOUDANT_API_KEY,
+  CLOUDANT_SERVICE_URL,
 } = process.env;
 
 server.use(
@@ -53,11 +55,17 @@ const uploadHandler = multer({ dest: "/tmp/file" });
 const DiscoveryV2 = require("ibm-watson/discovery/v2");
 const { IamAuthenticator } = require("ibm-watson/auth");
 const path = require("path");
+const { CloudantV1 } = require("@ibm-cloud/cloudant");
 
 const discoveryClient = new DiscoveryV2({
   authenticator: new IamAuthenticator({ apikey: WD_API_KEY }),
   version: WD_API_VERSION,
   serviceUrl: WD_SERVICE_URL,
+});
+
+const cloudantClient = new CloudantV1({
+  authenticator: new IamAuthenticator({ apikey: CLOUDANT_API_KEY }),
+  serviceUrl: CLOUDANT_SERVICE_URL,
 });
 
 const PORT = process.env.PORT || 3001;
@@ -118,6 +126,41 @@ server.get("/search", (req, res) => {
     .then(({ result }) => {
       res.send(result);
     });
+});
+
+server.post("/feedback", (req, res) => {
+  const dbName = "user-feedbacks";
+  const doc = req.body;
+
+  cloudantClient
+    .postDocument({ db: dbName, document: doc })
+    .then(({ result }) => {
+      res.send(result);
+    })
+    .catch((error) => {
+      console.error(JSON.stringify(error, null, 4));
+      res.status(500).send(error.message);
+    });
+});
+
+server.put("/feedback/:id", (req, res) => {
+  const dbName = "user-feedbacks";
+  const { id } = req.params;
+  const doc = req.body;
+
+  cloudantClient
+    .putDocument({ db: dbName, docId: id, document: doc })
+    .then(({ result }) => {
+      res.send(result);
+    })
+    .catch((error) => {
+      console.error(JSON.stringify(error, null, 4));
+      res.status(500).send(error.message);
+    });
+});
+
+server.get("/user", (req, res) => {
+  res.send(req.user);
 });
 
 server.get("*", (req, res) => {
