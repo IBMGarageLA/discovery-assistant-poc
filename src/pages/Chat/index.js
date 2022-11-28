@@ -17,12 +17,20 @@ const availableCompanies = [
     text: "ADP",
   },
   {
+    value: "ibm",
+    text: "IBM",
+  },
+  {
     value: "company-x",
     text: "Company X",
   },
   {
-    value: "ibm",
-    text: "IBM",
+    value: "company-y",
+    text: "Company Y",
+  },
+  {
+    value: "company-z",
+    text: "Company Z",
   },
 ];
 
