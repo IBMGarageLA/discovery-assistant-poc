@@ -32,7 +32,7 @@ REGISTRY_REPOSITORY="${CR_SERVER}/${CR_NAMESPACE}/${CR_IMAGE_NAME}"
 echo "Container registry repository: ${REGISTRY_REPOSITORY}"
 
 # Build docker image
-docker build --no-cache -t $REGISTRY_REPOSITORY .
+docker build -t $REGISTRY_REPOSITORY .
 
 # Push it to container registry
 docker push $REGISTRY_REPOSITORY

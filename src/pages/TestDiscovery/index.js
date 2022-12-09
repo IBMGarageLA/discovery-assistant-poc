@@ -3,6 +3,7 @@ import TestZone from "../../components/TestZone";
 import SearchResults from "../../components/SearchResults";
 import { Grid, Column, Loading } from "@carbon/react";
 import { useGlobalState } from "../../hooks/globalState";
+import DiscoveryViewer from "../../components/DiscoveryViewer";
 
 function TestDiscovery() {
   const { searchResults, loading } = useGlobalState();

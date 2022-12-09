@@ -5,13 +5,22 @@
   margin-bottom: 1rem;
 }
 
-.document-passage .filename {
+.document-passage .filename,
+.document-passage .answer {
   font-size: inherit;
   font-family: inherit;
 }
 
 .document-passage .filename span {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.document-passage .filename span.bold,
+.document-passage .answer span.bold {
   font-weight: bold;
+  text-decoration: none;
+  cursor: auto;
 }
 
 .highlight-passage {
@@ -52,4 +61,10 @@ hr {
 
 .user-feedback :last-child {
   margin-left: 1rem;
+}
+
+.highlight-document section {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif !important;
 }

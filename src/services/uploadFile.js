@@ -65,3 +65,13 @@ export async function updateFeedback(docId, feedback) {
     throw error;
   }
 }
+
+export async function getDocument(filename) {
+  try {
+    const result = await apiInstance.get(`/pdf`);
+
+    return result?.data;
+  } catch (error) {
+    throw error;
+  }
+}

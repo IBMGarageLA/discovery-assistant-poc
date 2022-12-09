@@ -8,7 +8,7 @@ import {
   Button,
   usePrefix,
 } from "@carbon/react";
-import React, { useState } from "react";
+import React from "react";
 import { searchText as doSearch } from "../../services/uploadFile";
 import { useGlobalState } from "../../hooks/globalState";
 import "./styles.scss";
@@ -29,10 +29,6 @@ const availableCompanies = [
   {
     value: "company-y",
     text: "Company Y",
-  },
-  {
-    value: "company-z",
-    text: "Company Z",
   },
 ];
 
@@ -103,6 +99,7 @@ function TestZone(props) {
     try {
       setLoading(true);
       const result = await doSearch(company, searchText);
+      console.log(result);
       setSearchResults(result);
     } catch (error) {
       console.error(error);
@@ -137,7 +134,12 @@ function TestZone(props) {
         </FormGroup>
 
         <FormGroup legendText={""}>
-          <Button onClick={handleSearch}>Search</Button>
+          <Button
+            onClick={handleSearch}
+            disabled={searchText?.length > 10 && company ? false : true}
+          >
+            Search
+          </Button>
         </FormGroup>
       </Stack>
     </Form>
