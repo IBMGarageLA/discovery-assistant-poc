@@ -10,20 +10,34 @@ import {
 } from "@carbon/icons-react";
 import { useGlobalState } from "../../hooks/globalState";
 import { postFeedback, updateFeedback } from "../../services/uploadFile";
+import {
+  DocumentPreview,
+  docSelection,
+} from "@ibm-watson/discovery-react-components";
 
-function SearchResultItem({
-  document_passages,
-  extracted_metadata,
-  html,
-  text,
-}) {
+// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+
+// import worker from "../../assets/pdf.worker.min.js";
+
+const PDF_WORKER = "../../assets/pdf.worker.min.js";
+// const PDF_WORKER =
+//   "https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js";
+// const PDF_WORKER =
+//   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.1.81/pdf.worker.min.js";
+// const PDF_WORKER = "../../assets/pdf.worker.js";
+// const PDF_WORKER =
+//   "https://raw.github.com/mozilla/pdf.js/gh-pages/build/pdf.js";
+// const PDF_WORKER = "https://cdnjs.com/libraries/pdf.js";
+
+function SearchResultItem(r) {
   return (
     <>
-      {document_passages?.map((passage, idx) => (
+      {r.document_passages?.map((passage, idx) => (
         <SearchResultPassage
           key={idx}
-          filename={extracted_metadata?.filename}
-          html={html}
+          filename={r.extracted_metadata?.filename}
+          html={r.html}
+          original={r}
           {...passage}
         />
       ))}
@@ -31,15 +45,31 @@ function SearchResultItem({
   );
 }
 
-function SearchResultPassage({ answers, passage_text, filename, html }) {
+function SearchResultPassage({
+  answers,
+  passage_text,
+  start_offset,
+  end_offset,
+  field,
+  filename,
+  html,
+  original,
+}) {
   const [feedback, setFeedback] = useState("");
   const [feedbackDbId, setFeedbackDbId] = useState(null);
   const [feedbackDbRev, setFeedbackDbRev] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  // console.log(end_offset);
 
   const relevantAnswer = answers.find((a) => a.confidence >= 0.3);
 
   const { userLogged, searchText, company, setLoading } = useGlobalState();
+  const highlight = {
+    end_offset: end_offset,
+    field: field,
+    passage_text: passage_text,
+    start_offset: start_offset,
+  };
 
   const userFeedbackHandler = async (userFeedback) => {
     try {
@@ -142,12 +172,28 @@ function SearchResultPassage({ answers, passage_text, filename, html }) {
         open={modalOpen}
         closeHandler={handleModalClose}
         htmlText={html}
+        data={original}
+        passage={passage_text}
+        highlight={highlight}
       />
     </Tile>
   );
 }
 
-function TextModal({ title, htmlText, closeHandler, open }) {
+function TextModal({
+  title,
+  htmlText,
+  closeHandler,
+  open,
+  data,
+  passage,
+  highlight,
+}) {
+  const file =
+    "http://s3.us-south.cloud-object-storage.appdomain.cloud/adp-test/662_0.pdf";
+  // const file = "../../assets/test3.pdf";
+  // const file = "../../assets/662_0.pdf";
+  console.log(data);
   return (
     <Modal
       open={open}
@@ -155,16 +201,25 @@ function TextModal({ title, htmlText, closeHandler, open }) {
       modalHeading={title}
       onRequestClose={closeHandler}
     >
-      <div
+      <DocumentPreview
+        document={data}
+        highlight={highlight}
+        pdfWorkerUrl={PDF_WORKER}
+        file={file}
+        // currentPage={1}
+        // scale={1}
+      />
+      {/* <div
         className="highlight-document"
         dangerouslySetInnerHTML={{ __html: htmlText }}
-      ></div>
+      ></div> */}
     </Modal>
   );
 }
 
 function SearchResults({ data }) {
   const prefix = usePrefix();
+  console.log(data);
   return (
     <div className="content">
       <p className={`${prefix}--file--label`}>Results</p>
