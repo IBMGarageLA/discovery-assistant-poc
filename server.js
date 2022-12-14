@@ -185,15 +185,16 @@ server.get("/user", (req, res) => {
 });
 
 server.get("/pdf", async (req, res) => {
+  const { key } = req.query;
+  console.log(key);
   const document = await cos
     .getObject({
       Bucket: "hr-documents",
-      Key: "1634_0.pdf",
+      Key: key,
     })
     .promise();
 
-  const doc = fs.readFileSync("./public/test.pdf");
-  res.send(doc);
+  res.send(document);
 });
 
 server.get("*", (req, res) => {

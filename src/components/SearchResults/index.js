@@ -10,24 +10,11 @@ import {
 } from "@carbon/icons-react";
 import { useGlobalState } from "../../hooks/globalState";
 import { postFeedback, updateFeedback } from "../../services/uploadFile";
-import {
-  DocumentPreview,
-  docSelection,
-} from "@ibm-watson/discovery-react-components";
+import { DocumentPreview } from "@ibm-watson/discovery-react-components";
 
-// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-
-// import worker from "../../assets/pdf.worker.min.js";
+import { getDocument } from "../../services/uploadFile";
 
 const PDF_WORKER = "../../assets/pdf.worker.min.js";
-// const PDF_WORKER =
-//   "https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js";
-// const PDF_WORKER =
-//   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.1.81/pdf.worker.min.js";
-// const PDF_WORKER = "../../assets/pdf.worker.js";
-// const PDF_WORKER =
-//   "https://raw.github.com/mozilla/pdf.js/gh-pages/build/pdf.js";
-// const PDF_WORKER = "https://cdnjs.com/libraries/pdf.js";
 
 function SearchResultItem(r) {
   return (
@@ -59,7 +46,6 @@ function SearchResultPassage({
   const [feedbackDbId, setFeedbackDbId] = useState(null);
   const [feedbackDbRev, setFeedbackDbRev] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  // console.log(end_offset);
 
   const relevantAnswer = answers.find((a) => a.confidence >= 0.3);
 
@@ -189,11 +175,11 @@ function TextModal({
   passage,
   highlight,
 }) {
-  const file =
-    "http://s3.us-south.cloud-object-storage.appdomain.cloud/adp-test/662_0.pdf";
-  // const file = "../../assets/test3.pdf";
-  // const file = "../../assets/662_0.pdf";
-  console.log(data);
+  const [doc, setDoc] = useState({});
+  getDocument(data.extracted_metadata.filename).then((d) => {
+    setDoc(d.Body);
+  });
+
   return (
     <Modal
       open={open}
@@ -205,21 +191,14 @@ function TextModal({
         document={data}
         highlight={highlight}
         pdfWorkerUrl={PDF_WORKER}
-        file={file}
-        // currentPage={1}
-        // scale={1}
+        file={doc}
       />
-      {/* <div
-        className="highlight-document"
-        dangerouslySetInnerHTML={{ __html: htmlText }}
-      ></div> */}
     </Modal>
   );
 }
 
 function SearchResults({ data }) {
   const prefix = usePrefix();
-  console.log(data);
   return (
     <div className="content">
       <p className={`${prefix}--file--label`}>Results</p>
