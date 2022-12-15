@@ -186,7 +186,6 @@ server.get("/user", (req, res) => {
 
 server.get("/pdf", async (req, res) => {
   const { key } = req.query;
-  console.log(key);
   const document = await cos
     .getObject({
       Bucket: "hr-documents",
