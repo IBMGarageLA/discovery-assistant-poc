@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tile, usePrefix } from "@carbon/react";
+import { Modal, Tile, usePrefix } from "@carbon/react";
 
 import "./styles.scss";
 import {
@@ -10,14 +10,21 @@ import {
 } from "@carbon/icons-react";
 import { useGlobalState } from "../../hooks/globalState";
 import { postFeedback, updateFeedback } from "../../services/uploadFile";
+import { DocumentPreview } from "@ibm-watson/discovery-react-components";
 
-function SearchResultItem({ document_passages, extracted_metadata }) {
+import { getDocument } from "../../services/uploadFile";
+
+const PDF_WORKER = "../../assets/pdf.worker.min.js";
+
+function SearchResultItem(r) {
   return (
     <>
-      {document_passages?.map((passage, idx) => (
+      {r.document_passages?.map((passage, idx) => (
         <SearchResultPassage
           key={idx}
-          filename={extracted_metadata?.filename}
+          filename={r.extracted_metadata?.filename}
+          html={r.html}
+          original={r}
           {...passage}
         />
       ))}
@@ -25,12 +32,30 @@ function SearchResultItem({ document_passages, extracted_metadata }) {
   );
 }
 
-function SearchResultPassage({ passage_text, filename }) {
+function SearchResultPassage({
+  answers,
+  passage_text,
+  start_offset,
+  end_offset,
+  field,
+  filename,
+  html,
+  original,
+}) {
   const [feedback, setFeedback] = useState("");
   const [feedbackDbId, setFeedbackDbId] = useState(null);
   const [feedbackDbRev, setFeedbackDbRev] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const relevantAnswer = answers.find((a) => a.confidence >= 0.3);
 
   const { userLogged, searchText, company, setLoading } = useGlobalState();
+  const highlight = {
+    end_offset: end_offset,
+    field: field,
+    passage_text: passage_text,
+    start_offset: start_offset,
+  };
 
   const userFeedbackHandler = async (userFeedback) => {
     try {
@@ -83,25 +108,92 @@ function SearchResultPassage({ passage_text, filename }) {
     );
   };
 
+  const handleModalOpen = (e) => {
+    e.preventDefault();
+    setModalOpen(true);
+  };
+
+  const handleModalClose = (e) => {
+    e.preventDefault();
+    setModalOpen(false);
+  };
+
   return (
     <Tile className="document-passage">
       <div
         className="highlight-passage"
         dangerouslySetInnerHTML={{ __html: passage_text }}
       ></div>
+
+      {relevantAnswer && (
+        <>
+          <hr />
+          <div className="footer">
+            <p className="answer">
+              <span className="bold">Answer: </span>
+              <span>{relevantAnswer.answer_text}</span>
+            </p>
+            <div className="answer">
+              <span className="bold">Confidence: </span>
+              <span>{(relevantAnswer.confidence * 100).toFixed(1)}%</span>
+            </div>
+          </div>
+        </>
+      )}
+
       <hr />
 
       <div className="footer">
         <p className="filename">
-          <span>Document: </span>
-          {filename}
+          <span className="bold">Document: </span>
+          <span onClick={handleModalOpen}>{filename}</span>
         </p>
         <div className="user-feedback">
           <Negative />
           <Positive />
         </div>
       </div>
+      <TextModal
+        title={filename}
+        open={modalOpen}
+        closeHandler={handleModalClose}
+        htmlText={html}
+        data={original}
+        passage={passage_text}
+        highlight={highlight}
+      />
     </Tile>
+  );
+}
+
+function TextModal({
+  title,
+  htmlText,
+  closeHandler,
+  open,
+  data,
+  passage,
+  highlight,
+}) {
+  const [doc, setDoc] = useState({});
+  getDocument(data.extracted_metadata.filename).then((d) => {
+    setDoc(d.Body);
+  });
+
+  return (
+    <Modal
+      open={open}
+      passiveModal
+      modalHeading={title}
+      onRequestClose={closeHandler}
+    >
+      <DocumentPreview
+        document={data}
+        highlight={highlight}
+        pdfWorkerUrl={PDF_WORKER}
+        file={doc}
+      />
+    </Modal>
   );
 }
 

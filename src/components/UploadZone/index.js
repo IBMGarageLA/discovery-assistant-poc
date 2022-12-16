@@ -27,10 +27,6 @@ const availableCompanies = [
     value: "company-y",
     text: "Company Y",
   },
-  {
-    value: "company-z",
-    text: "Company Z",
-  },
 ];
 
 function SelectInput(props) {

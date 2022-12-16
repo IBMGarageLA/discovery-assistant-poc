@@ -6,7 +6,7 @@ const session = require("express-session");
 const passport = require("passport");
 const WebAppStrategy = require("ibmcloud-appid").WebAppStrategy;
 const cors = require("cors");
-
+const IBM = require("ibm-cos-sdk");
 const fs = require("fs");
 
 const {
@@ -22,7 +22,19 @@ const {
   APP_DOMAIN,
   CLOUDANT_API_KEY,
   CLOUDANT_SERVICE_URL,
+  COS_API_KEY,
+  COS_INSTANCE_ID,
+  COS_ENDPOINT,
 } = process.env;
+
+const config = {
+  endpoint: COS_ENDPOINT,
+  apiKeyId: COS_API_KEY,
+  serviceInstanceId: COS_INSTANCE_ID,
+  signatureVersion: "iam",
+};
+
+const cos = new IBM.S3(config);
 
 server.use(
   session({
@@ -120,7 +132,16 @@ server.get("/search", (req, res) => {
     .query({
       projectId: WD_PROJECT_ID,
       collectionIds: [WD_COLLECTION_ID],
-      query: text,
+      naturalLanguageQuery: text,
+      passages: {
+        enabled: "true",
+        fields: ["text"],
+        characters: 325,
+        per_document: true,
+        max_per_document: 10,
+        find_answers: true,
+        max_answers_per_passage: 1,
+      },
       filter: `metadata.company::${company}`,
     })
     .then(({ result }) => {
@@ -161,6 +182,18 @@ server.put("/feedback/:id", (req, res) => {
 
 server.get("/user", (req, res) => {
   res.send(req.user);
+});
+
+server.get("/pdf", async (req, res) => {
+  const { key } = req.query;
+  const document = await cos
+    .getObject({
+      Bucket: "hr-documents",
+      Key: key,
+    })
+    .promise();
+
+  res.send(document);
 });
 
 server.get("*", (req, res) => {

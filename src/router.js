@@ -11,6 +11,8 @@ import TestDiscovery from "./pages/TestDiscovery";
 import Chat from "./pages/Chat";
 import { useGlobalState } from "./hooks/globalState";
 import { getUser } from "./services/uploadFile";
+import PdfViewer from "./components/PdfViewer";
+import DiscoveryViewer from "./components/DiscoveryViewer";
 
 function Routes({ children }) {
   const { setLoggedUser } = useGlobalState();
@@ -35,6 +37,7 @@ function Routes({ children }) {
         <Route path="" element={<Upload />} />
         <Route path="test-discovery" element={<TestDiscovery />} />
         <Route path="chat" element={<Chat />} />
+        {/* <Route path="test" element={<DiscoveryViewer />} /> */}
       </Switch>
     </Router>
   );
