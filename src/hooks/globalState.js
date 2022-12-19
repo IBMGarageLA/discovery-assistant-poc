@@ -8,6 +8,7 @@ export default function GlobalStateProvider({ children }) {
   const [loggedUser, setLoggedUser] = useState({});
   const [searchText, setSearchText] = useState(null);
   const [company, setCompany] = useState(null);
+  const [doc, setDoc] = useState({});
 
   return (
     <GlobalStateContext.Provider
@@ -22,6 +23,8 @@ export default function GlobalStateProvider({ children }) {
         setSearchText,
         company,
         setCompany,
+        doc,
+        setDoc,
       }}
     >
       {children}

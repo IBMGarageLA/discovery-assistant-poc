@@ -16,18 +16,24 @@ import { getDocument } from "../../services/uploadFile";
 
 const PDF_WORKER = "../../assets/pdf.worker.min.js";
 
+const THRESHOLD = 0.25;
+
 function SearchResultItem(r) {
   return (
     <>
-      {r.document_passages?.map((passage, idx) => (
-        <SearchResultPassage
-          key={idx}
-          filename={r.extracted_metadata?.filename}
-          html={r.html}
-          original={r}
-          {...passage}
-        />
-      ))}
+      {r.document_passages
+        ?.filter((value) =>
+          value.answers.every((v) => v.confidence >= THRESHOLD)
+        )
+        .map((passage, idx) => (
+          <SearchResultPassage
+            key={idx}
+            filename={r.extracted_metadata?.filename}
+            html={r.html}
+            original={r}
+            {...passage}
+          />
+        ))}
     </>
   );
 }
@@ -46,8 +52,9 @@ function SearchResultPassage({
   const [feedbackDbId, setFeedbackDbId] = useState(null);
   const [feedbackDbRev, setFeedbackDbRev] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const { doc, setDoc } = useGlobalState();
 
-  const relevantAnswer = answers.find((a) => a.confidence >= 0.3);
+  const relevantAnswer = answers.find((a) => a.confidence >= THRESHOLD);
 
   const { userLogged, searchText, company, setLoading } = useGlobalState();
   const highlight = {
@@ -110,6 +117,9 @@ function SearchResultPassage({
 
   const handleModalOpen = (e) => {
     e.preventDefault();
+    getDocument(original.extracted_metadata.filename).then((d) => {
+      setDoc(d.Body);
+    });
     setModalOpen(true);
   };
 
@@ -175,10 +185,7 @@ function TextModal({
   passage,
   highlight,
 }) {
-  const [doc, setDoc] = useState({});
-  getDocument(data.extracted_metadata.filename).then((d) => {
-    setDoc(d.Body);
-  });
+  const { doc, setDoc } = useGlobalState();
 
   return (
     <Modal
