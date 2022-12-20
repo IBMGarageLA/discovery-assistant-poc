@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Tile, usePrefix } from "@carbon/react";
+import { Modal, Tile, usePrefix, Loading } from "@carbon/react";
 
 import "./styles.scss";
 import {
@@ -52,7 +52,8 @@ function SearchResultPassage({
   const [feedbackDbId, setFeedbackDbId] = useState(null);
   const [feedbackDbRev, setFeedbackDbRev] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const { doc, setDoc } = useGlobalState();
+  const { setDoc } = useGlobalState();
+  const { setLoadingDoc } = useGlobalState();
 
   const relevantAnswer = answers.find((a) => a.confidence >= THRESHOLD);
 
@@ -117,8 +118,10 @@ function SearchResultPassage({
 
   const handleModalOpen = (e) => {
     e.preventDefault();
+    setLoading(true);
     getDocument(original.extracted_metadata.filename).then((d) => {
       setDoc(d.Body);
+      setLoading(false);
     });
     setModalOpen(true);
   };
@@ -185,22 +188,27 @@ function TextModal({
   passage,
   highlight,
 }) {
-  const { doc, setDoc } = useGlobalState();
+  const { doc } = useGlobalState();
+  const { loading } = useGlobalState();
 
   return (
-    <Modal
-      open={open}
-      passiveModal
-      modalHeading={title}
-      onRequestClose={closeHandler}
-    >
-      <DocumentPreview
-        document={data}
-        highlight={highlight}
-        pdfWorkerUrl={PDF_WORKER}
-        file={doc}
-      />
-    </Modal>
+    <div>
+      {!loading && (
+        <Modal
+          open={open}
+          passiveModal
+          modalHeading={title}
+          onRequestClose={closeHandler}
+        >
+          <DocumentPreview
+            document={data}
+            highlight={highlight}
+            pdfWorkerUrl={PDF_WORKER}
+            file={doc}
+          />
+        </Modal>
+      )}
+    </div>
   );
 }
 
