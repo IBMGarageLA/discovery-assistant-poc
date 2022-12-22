@@ -16,7 +16,7 @@ import { getDocument } from "../../services/uploadFile";
 
 const PDF_WORKER = "../../assets/pdf.worker.min.js";
 
-const THRESHOLD = 0.25;
+const THRESHOLD = 0.2;
 
 function SearchResultItem(r) {
   return (
