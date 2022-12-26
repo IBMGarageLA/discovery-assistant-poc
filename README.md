@@ -48,6 +48,8 @@ npm run dev
 
 ```
 .
+├── dev-env-setup
+│   └── example.env
 ├── public
 │   ├── assets
 │   │   └── pdf.worker.min.js
@@ -59,6 +61,8 @@ npm run dev
 │   ├── manifest.json
 │   └── robots.txt
 ├── src
+│   ├── assets
+│   │   └── pdf.worker.min.js
 │   ├── components
 │   │   ├── DefaultHeader
 │   │   │   └── index.js
