@@ -80,7 +80,7 @@ const cloudantClient = new CloudantV1({
   serviceUrl: CLOUDANT_SERVICE_URL,
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.BACKEND_PORT || 3001;
 
 server.get(
   "/appid/callback",
