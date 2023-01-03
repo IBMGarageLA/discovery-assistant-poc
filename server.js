@@ -25,6 +25,7 @@ const {
   COS_API_KEY,
   COS_INSTANCE_ID,
   COS_ENDPOINT,
+  COS_BUCKET,
 } = process.env;
 
 const config = {
@@ -82,6 +83,48 @@ const cloudantClient = new CloudantV1({
 
 const PORT = process.env.BACKEND_PORT || 3001;
 
+const uploadCos = (file) => {
+  // console.log(file);
+  return new Promise((resolve, reject) => {
+    const params = {
+      Bucket: COS_BUCKET,
+      Key: file.filename,
+      Body: file?.data,
+      ContentType: file?.mimetype,
+    };
+
+    cos
+      .putObject(params)
+      .promise()
+      .then((d) => {
+        resolve(file);
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  });
+};
+
+const addDsicovery = (file) => {
+  return new Promise((resolve, reject) => {
+    discoveryClient
+      .addDocument({
+        collectionId: WD_COLLECTION_ID,
+        projectId: WD_PROJECT_ID,
+        file: file?.fileStream,
+        filename: file?.originalname,
+        fileContentType: file?.mimetype,
+        metadata: file?.metadata,
+      })
+      .then(({ result }) => {
+        resolve(result);
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  });
+};
+
 server.get(
   "/appid/callback",
   passport.authenticate(WebAppStrategy.STRATEGY_NAME)
@@ -100,29 +143,51 @@ server.post("/file/upload", uploadHandler.single("file"), (req, res) => {
 
   const fileStream = fs.readFileSync(file?.path);
 
-  //DONE implement watson discovery upload process
-  discoveryClient
-    .addDocument({
-      collectionId: WD_COLLECTION_ID,
-      projectId: WD_PROJECT_ID,
-      file: fileStream,
-      filename: file?.originalname,
-      fileContentType: file?.mimetype,
-      metadata: metadata,
-    })
-    .then(({ result }) => {
+  return Promise.resolve({
+    data: fileStream,
+    filename: file.originalname,
+    mimetype: file.mimetype,
+    metadata: metadata,
+  })
+    .then(uploadCos)
+    .then(addDsicovery)
+    .then(() => {
       res.send({
         success: true,
         message: "File uploaded and processing started",
       });
     })
     .catch((e) => {
-      console.error(e.message);
+      console.log(e.message);
       res.send({
         success: false,
         message: "Error on file upload",
       });
     });
+
+  //DONE implement watson discovery upload process
+  // discoveryClient
+  //   .addDocument({
+  //     collectionId: WD_COLLECTION_ID,
+  //     projectId: WD_PROJECT_ID,
+  //     file: fileStream,
+  //     filename: file?.originalname,
+  //     fileContentType: file?.mimetype,
+  //     metadata: metadata,
+  //   })
+  //   .then(({ result }) => {
+  //     res.send({
+  //       success: true,
+  //       message: "File uploaded and processing started",
+  //     });
+  //   })
+  //   .catch((e) => {
+  //     console.error(e.message);
+  //     res.send({
+  //       success: false,
+  //       message: "Error on file upload",
+  //     });
+  //   });
 });
 
 server.get("/search", (req, res) => {
