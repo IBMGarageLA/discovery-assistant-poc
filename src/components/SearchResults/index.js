@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Tile, usePrefix } from "@carbon/react";
+import { Modal, Tile, usePrefix, Loading } from "@carbon/react";
 
 import "./styles.scss";
 import {
@@ -16,18 +16,24 @@ import { getDocument } from "../../services/uploadFile";
 
 const PDF_WORKER = "../../assets/pdf.worker.min.js";
 
+const THRESHOLD = 0.1;
+
 function SearchResultItem(r) {
   return (
     <>
-      {r.document_passages?.map((passage, idx) => (
-        <SearchResultPassage
-          key={idx}
-          filename={r.extracted_metadata?.filename}
-          html={r.html}
-          original={r}
-          {...passage}
-        />
-      ))}
+      {r.document_passages
+        ?.filter((value) =>
+          value.answers.every((v) => v.confidence >= THRESHOLD)
+        )
+        .map((passage, idx) => (
+          <SearchResultPassage
+            key={idx}
+            filename={r.extracted_metadata?.filename}
+            html={r.html}
+            original={r}
+            {...passage}
+          />
+        ))}
     </>
   );
 }
@@ -46,8 +52,10 @@ function SearchResultPassage({
   const [feedbackDbId, setFeedbackDbId] = useState(null);
   const [feedbackDbRev, setFeedbackDbRev] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const { setDoc } = useGlobalState();
+  const { setLoadingDoc } = useGlobalState();
 
-  const relevantAnswer = answers.find((a) => a.confidence >= 0.3);
+  const relevantAnswer = answers.find((a) => a.confidence >= THRESHOLD);
 
   const { userLogged, searchText, company, setLoading } = useGlobalState();
   const highlight = {
@@ -110,6 +118,11 @@ function SearchResultPassage({
 
   const handleModalOpen = (e) => {
     e.preventDefault();
+    setLoading(true);
+    getDocument(original.extracted_metadata.filename).then((d) => {
+      setDoc(d.Body);
+      setLoading(false);
+    });
     setModalOpen(true);
   };
 
@@ -175,25 +188,27 @@ function TextModal({
   passage,
   highlight,
 }) {
-  const [doc, setDoc] = useState({});
-  getDocument(data.extracted_metadata.filename).then((d) => {
-    setDoc(d.Body);
-  });
+  const { doc } = useGlobalState();
+  const { loading } = useGlobalState();
 
   return (
-    <Modal
-      open={open}
-      passiveModal
-      modalHeading={title}
-      onRequestClose={closeHandler}
-    >
-      <DocumentPreview
-        document={data}
-        highlight={highlight}
-        pdfWorkerUrl={PDF_WORKER}
-        file={doc}
-      />
-    </Modal>
+    <div>
+      {!loading && (
+        <Modal
+          open={open}
+          passiveModal
+          modalHeading={title}
+          onRequestClose={closeHandler}
+        >
+          <DocumentPreview
+            document={data}
+            highlight={highlight}
+            pdfWorkerUrl={PDF_WORKER}
+            file={doc}
+          />
+        </Modal>
+      )}
+    </div>
   );
 }
 
