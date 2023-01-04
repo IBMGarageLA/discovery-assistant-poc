@@ -164,30 +164,6 @@ server.post("/file/upload", uploadHandler.single("file"), (req, res) => {
         message: "Error on file upload",
       });
     });
-
-  //DONE implement watson discovery upload process
-  // discoveryClient
-  //   .addDocument({
-  //     collectionId: WD_COLLECTION_ID,
-  //     projectId: WD_PROJECT_ID,
-  //     file: fileStream,
-  //     filename: file?.originalname,
-  //     fileContentType: file?.mimetype,
-  //     metadata: metadata,
-  //   })
-  //   .then(({ result }) => {
-  //     res.send({
-  //       success: true,
-  //       message: "File uploaded and processing started",
-  //     });
-  //   })
-  //   .catch((e) => {
-  //     console.error(e.message);
-  //     res.send({
-  //       success: false,
-  //       message: "Error on file upload",
-  //     });
-  //   });
 });
 
 server.get("/search", (req, res) => {
