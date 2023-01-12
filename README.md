@@ -5,7 +5,33 @@
 
 ## About the project
 
-The application allows you to filter the Watson Discovery results based on metadatas.
+The application allows you to filter the Watson Discovery results based on metadatas. Below you may find the application diagram which describe how the componets connects.
+
+![diagram](./support/diagrams/diagram.png)
+
+The application compoenets were deployed on Code Engine in IBM Cloud it neccessary to specify the following environment variables.
+
+- Watson Discovery APIKEY
+- Watson Discovery version, which for this project was used `2020-08-30`
+- Watson Discovery Service URL
+- Watson Discovery Project ID
+- Watson Discovery Collection ID
+- AppID Client ID
+- AppID Tenant ID
+- AppID Secret
+- AppID OAuth URL
+- Cloudant APIKEY
+- Cloudant Service URL
+- Cloud Object Storage APIKEY
+- Cloud Object Instance ID
+- Cloud Object Storage Endpoint
+- Cloud Object Storage Bucket
+
+The components and service are all in IBM Cloud
+
+To use the same collection for diferent companies it was used Discovery Metadata while ingesting documents, and it allow to query data over specific company.
+
+it was used Natural Language Query to query data on Discovery Service.
 
 ### Built with
 
@@ -13,6 +39,8 @@ The application allows you to filter the Watson Discovery results based on metad
 - [Express](https://expressjs.com/)
 - [React](https://reactjs.org)
 - [Watson Services](https://cloud.ibm.com/developer/watson/documentation)
+- [Cloudant](https://cloud.ibm.com/catalog/services/cloudant)
+- [AppId](https://cloud.ibm.com/catalog/services/app-id)
 - [Carbon Components](https://react.carbondesignsystem.com/)
 
 ## Getting Started
@@ -44,12 +72,33 @@ npm install
 npm run dev
 ```
 
+### Deploy on Code Engine
+
+0. Create the services on IBM Cloud
+
+1. Clone this repository
+
+```sh
+ git clone <repository_url>
+```
+
+2. Create a deploy.env file with the enviroment variables listed on [deploy.env.example](./deploy.env.example)
+
+3. Deploy on Code Engine
+
+```sh
+bash deploy.sh
+```
+
 ## Folder Structure
 
 ```
 .
 ├── dev-env-setup
 │   └── example.env
+├── support
+│   └── diagram
+│       └── diagram.png
 ├── public
 │   ├── assets
 │   │   └── pdf.worker.min.js
@@ -107,7 +156,7 @@ npm run dev
 ├── Dockerfile
 ├── LICENSE
 ├── README.md
-├── deploy.env
+├── deploy.env.example
 ├── deploy.sh
 ├── package-lock.json
 ├── package.json
