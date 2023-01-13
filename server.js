@@ -111,8 +111,8 @@ const addDsicovery = (file) => {
       .addDocument({
         collectionId: WD_COLLECTION_ID,
         projectId: WD_PROJECT_ID,
-        file: file?.fileStream,
-        filename: file?.originalname,
+        file: file?.data,
+        filename: file?.filename,
         fileContentType: file?.mimetype,
         metadata: file?.metadata,
       })
